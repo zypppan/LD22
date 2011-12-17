@@ -3,12 +3,12 @@ package net.faijdherbe.zedsurvivor;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
+import javax.vecmath.Point2f;
 
 public class Level {
 	private int[] levelData;
@@ -16,10 +16,27 @@ public class Level {
 	private Dimension tileSize = new Dimension(16,16);
 	private BufferedImage levelTiles;
 	
+	int [] tileMapping = null;
+	
 	public Level(String filename) {
+		tileMapping = new int[0xFF];
+		tileMapping[0x00] = 5;
+		tileMapping[0xBF] = 4;
+		tileMapping[0x7E] = 0;
+		tileMapping[0x81] = 1;
+		tileMapping[0x7F] = 2;
+		tileMapping[0x80] = 3;
+		tileMapping[0x83] = 13;
+		tileMapping[0x82] = 12;
+		tileMapping[0x84] = 10;
+		tileMapping[0x85] = 11;
 		this.loadAndParse(filename);
+		
+		items[0] = new Item();
+		items[0].origin = new Point2f(10.0f,10.0f);
 	}
 	
+	Item [] items = new Item[256];
 	
 	private void loadAndParse(String filename) {
 		BufferedImage levelImage = null;
@@ -44,12 +61,13 @@ public class Level {
 		System.out.println("loaded level: "+ levelData.length + " - " + levelSize.toString());
 	}
 	
-	public Point getSpawnLocation() {
+	public Point2f getSpawnLocation() {
 		
 		for(int i = 0; i < levelData.length; i++) {
 			
-			if((levelData[i]&Level.Data.PLAYER_SPAWN) == Level.Data.PLAYER_SPAWN) {
-				return new Point(i % levelSize.width, (int)Math.floor(i / (float)levelSize.width));
+			if((levelData[i]&Data.PLAYER_SPAWN_MASK) == Data.PLAYER_SPAWN_MASK) {
+
+				return new Point2f((float)(i % levelSize.width), (float)Math.floor(i / (float)levelSize.width));
 			}
 		}
 		
@@ -64,8 +82,8 @@ public class Level {
 		for(int x = 0; x < levelSize.width; x++) {
 			for(int y = 0; y < levelSize.height; y++) {
 
-				float __x = x - (_x / 10.0f);
-				float __y = y - (_y / 10.0f);
+				float __x = x - (_x);
+				float __y = y - (_y);
 				
 				int tileIndex = tileIndexForLevelData(levelData[y*levelSize.width + x]);
 				Point tilePoint = new Point((tileIndex%cols)*tileSize.width, (tileIndex/cols) * tileSize.height);
@@ -76,70 +94,25 @@ public class Level {
 						null);
 			}
 		}
+		
+		for (Item item : items) {
+			if(item != null) {
+				g.drawImage(item.getImage(), Math.round((item.origin.x - _x)*tileSize.width), Math.round((item.origin.y - _y)*tileSize.height), null);
+			}
+		}
 	}
 	
 
 	class Data {
-		public static final int PLAYER_SPAWN = 0x00FF00;
+		public static final int PLAYER_SPAWN_MASK = 0xff00ff00;
 	}
-	class Tile {
-		public static final int SOLID 				= 0x00;
-		public static final int ROAD 				= 0xBF;
-		public static final int PAVEMENT_WEST 		= 0x7E;
-		public static final int PAVEMENT_EAST 		= 0x81;
-		public static final int PAVEMENT_NORTH 		= 0x7F;
-		public static final int PAVEMENT_SOUTH 		= 0x80;
-		public static final int PAVEMENT_CORNER_NE 	= 0x83;
-		public static final int PAVEMENT_CORNER_NW 	= 0x82;
-		public static final int PAVEMENT_CORNER_SW 	= 0x84;
-		public static final int PAVEMENT_CORNER_SE 	= 0x85;
-		
-	}
+
 	
 	private int tileIndexForLevelData(int data) {
-		int i = 99;
-		switch (data&0xFF) {
-		case Tile.SOLID:
-			i= 5;
-			break;
-
-		case Tile.PAVEMENT_WEST:
-			i = 0;
-			break;
-		case Tile.PAVEMENT_NORTH:
-			i = 2;
-			break;
-		case Tile.PAVEMENT_SOUTH:
-			i = 3;
-			break;
-		case Tile.PAVEMENT_EAST:
-			i = 1;
-			break;
-			
-
-		case Tile.PAVEMENT_CORNER_SW: //sw
-			i = 10;
-			break;
-		case Tile.PAVEMENT_CORNER_SE: //se
-			i = 11;
-			break;
-		case Tile.PAVEMENT_CORNER_NW: //nw
-			i = 12;
-			break;
-		case Tile.PAVEMENT_CORNER_NE: //ne
-			i = 13;
-			break;
-			
-			
-		case Tile.ROAD:
-			i = 4;
-			break;
-
-		default :
-			i= 99;
-		}
 		
-		return i;
+		
+		
+		return tileMapping[data&0xFF];
 		
 	}
 	

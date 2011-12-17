@@ -4,6 +4,8 @@ public class Player extends Sprite {
 	
 	int walkingDirection = Sprite.Direction.NONE;
 	
+	Item [] items = new Item[16];
+	
 	public void walk(int direction) {
 		walkingDirection = direction;
 	}
@@ -13,22 +15,33 @@ public class Player extends Sprite {
 		// TODO Auto-generated method stub
 		super.update(timeSinceLastUpdate);
 
-		float moveFactor = (1*(timeSinceLastUpdate/10000000));
+		float moveFactor = (0.0667f*(timeSinceLastUpdate/10000000));
 		switch(walkingDirection) {
 		case Sprite.Direction.LEFT:
-			this.setxLocation(this.getxLocation() - moveFactor);
+			this.origin.x -= moveFactor;
 			break;
 		case Sprite.Direction.RIGHT:
-			this.setxLocation(this.getxLocation() + moveFactor);
+			this.origin.x += moveFactor;
 			break;
 		case Sprite.Direction.UP:
-			this.setyLocation(this.getyLocation() - moveFactor);
+			this.origin.y -= moveFactor;
 			break;
 		case Sprite.Direction.DOWN:
-			this.setyLocation(this.getyLocation() + moveFactor);
+			this.origin.y += moveFactor;
 			break;
 		}
 	}
+	
+	public boolean pickup(Item item) {
+		for(int i = 0; i < items.length; i++) {
+			if(items[i] == null) {
+				items[i] = item;
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	
 	public Player() {
 		super("player.bmp");

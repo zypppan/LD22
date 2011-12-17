@@ -1,14 +1,19 @@
 package net.faijdherbe.zedsurvivor;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
+import javax.vecmath.Point2f;
 
 public class Sprite {
-	
-	private float xLocation, yLocation;
+
 	private BufferedImage spriteImage = null;
+	
+	public Point2f origin;
+	
+	public static final int ALPHA_MASK = 0xFFFF00FF;
 	
 	public class Direction {
 		public static final int NONE = 0;
@@ -26,28 +31,24 @@ public class Sprite {
 		try {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			InputStream input = loader.getSystemResourceAsStream(filename);
-			spriteImage = ImageIO.read(input);
+			BufferedImage tmpImage = ImageIO.read(input);
+			
+			spriteImage = new BufferedImage(tmpImage.getWidth(), tmpImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+			spriteImage.getGraphics().drawImage(tmpImage, 0, 0, null);
+			
+			int [] imgData = ((DataBufferInt) spriteImage.getRaster().getDataBuffer()).getData();
+			
+			for(int i = 0; i < imgData.length; i++ ) {
+				if(imgData[i] == ALPHA_MASK) {
+					imgData[i] = 0x00000000;
+				}
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public float getxLocation() {
-		return xLocation;
-	}
-
-	public void setxLocation(float xLocation) {
-		this.xLocation = xLocation;
-	}
-
-	public float getyLocation() {
-		return yLocation;
-	}
-
-	public void setyLocation(float yLocation) {
-		this.yLocation = yLocation;
-	}
-
 	public void update(long timeSinceLastUpdate) {
 		
 	}
