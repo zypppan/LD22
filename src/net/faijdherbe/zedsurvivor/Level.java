@@ -67,14 +67,14 @@ public class Level {
 		for(int x = 0; x < levelSize.width; x++) {
 			for(int y = 0; y < levelSize.height; y++) {
 
-				int __x = Math.round(x - (_x / 10.0f));
-				int __y = Math.round(y - (_y / 10.0f));
+				float __x = x - (_x / 10.0f);
+				float __y = y - (_y / 10.0f);
 				
 				int tileIndex = tileIndexForLevelData(levelData[y*levelSize.width + x]);
 				Point tilePoint = new Point((tileIndex%cols)*tileSize.width, (tileIndex/cols) * tileSize.height);
 				
 				g.drawImage(levelTiles, 
-						__x*tileSize.width, __y*tileSize.height, __x*tileSize.width+tileSize.width, __y*tileSize.height+tileSize.height, 
+						Math.round(__x*tileSize.width), Math.round(__y*tileSize.height), Math.round(__x*tileSize.width+tileSize.width), Math.round(__y*tileSize.height+tileSize.height), 
 						tilePoint.x, tilePoint.y, tilePoint.x + tileSize.width, tilePoint.y + tileSize.height, 
 						null);
 			}
@@ -83,40 +83,40 @@ public class Level {
 	
 	private int tileIndexForLevelData(int data) {
 		int i = 99;
-		switch (data&0xFFFFFF) {
+		switch (data&0xFF) {
 		case 0x00:
 			i= 5;
 			break;
 
-		case 0x6B6B6B:
+		case 0x7E:
 			i = 0;
 			break;
-		case 0x6C6C6C:
+		case 0x7F:
 			i = 2;
 			break;
-		case 0x6D6D6D:
+		case 0x80:
 			i = 3;
 			break;
-		case 0x6E6E6E:
+		case 0x81:
 			i = 1;
 			break;
 			
 
-		case 0x717171:
+		case 0x84:
 			i = 10;
 			break;
-		case 0x727272:
+		case 0x85:
 			i = 11;
 			break;
-		case 0x737373:
+		case 0x82:
 			i = 12;
 			break;
-		case 0x747474:
+		case 0x83:
 			i = 13;
 			break;
 			
 			
-		case 0xB1B1B1:
+		case 0xBF:
 			i = 4;
 			break;
 
