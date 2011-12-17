@@ -20,9 +20,6 @@ public class Level {
 		this.loadAndParse(filename);
 	}
 	
-	class Data {
-		public static final int PLAYER_SPAWN = 0x00FF00;
-	}
 	
 	private void loadAndParse(String filename) {
 		BufferedImage levelImage = null;
@@ -81,42 +78,60 @@ public class Level {
 		}
 	}
 	
+
+	class Data {
+		public static final int PLAYER_SPAWN = 0x00FF00;
+	}
+	class Tile {
+		public static final int SOLID 				= 0x00;
+		public static final int ROAD 				= 0xBF;
+		public static final int PAVEMENT_WEST 		= 0x7E;
+		public static final int PAVEMENT_EAST 		= 0x81;
+		public static final int PAVEMENT_NORTH 		= 0x7F;
+		public static final int PAVEMENT_SOUTH 		= 0x80;
+		public static final int PAVEMENT_CORNER_NE 	= 0x83;
+		public static final int PAVEMENT_CORNER_NW 	= 0x82;
+		public static final int PAVEMENT_CORNER_SW 	= 0x84;
+		public static final int PAVEMENT_CORNER_SE 	= 0x85;
+		
+	}
+	
 	private int tileIndexForLevelData(int data) {
 		int i = 99;
 		switch (data&0xFF) {
-		case 0x00:
+		case Tile.SOLID:
 			i= 5;
 			break;
 
-		case 0x7E:
+		case Tile.PAVEMENT_WEST:
 			i = 0;
 			break;
-		case 0x7F:
+		case Tile.PAVEMENT_NORTH:
 			i = 2;
 			break;
-		case 0x80:
+		case Tile.PAVEMENT_SOUTH:
 			i = 3;
 			break;
-		case 0x81:
+		case Tile.PAVEMENT_EAST:
 			i = 1;
 			break;
 			
 
-		case 0x84:
+		case Tile.PAVEMENT_CORNER_SW: //sw
 			i = 10;
 			break;
-		case 0x85:
+		case Tile.PAVEMENT_CORNER_SE: //se
 			i = 11;
 			break;
-		case 0x82:
+		case Tile.PAVEMENT_CORNER_NW: //nw
 			i = 12;
 			break;
-		case 0x83:
+		case Tile.PAVEMENT_CORNER_NE: //ne
 			i = 13;
 			break;
 			
 			
-		case 0xBF:
+		case Tile.ROAD:
 			i = 4;
 			break;
 
